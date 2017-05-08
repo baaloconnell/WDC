@@ -5,7 +5,7 @@ To run the server do the following (this is copied from Practical Exercise 4)
 
 Guide
 1. Download and Install NodeJS.
-    You can find the installer HERE (Links to an external site.)Links to an external site..
+    You can find the installer HERE: https://nodejs.org/en/download/
     Linux users should use install the appropriate package using their package management system.
 2. Create the folder that you want your express server files to reside in.
 3. Open a command prompt/terminal and navigate to the folder that you just created.
