@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Google Calendar API Quickstart</title>
+		<meta charset='utf-8' />
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	</head>
+	<body>
+		<!--Add buttons to initiate auth sequence and sign out-->
+		<button id="authorize-button" style="display: none;">Authorize</button>
+		<button id="signout-button" style="display: none;">Sign Out</button>
+
+		<pre id="content"></pre>
+
+		<script type="text/javascript">
+			// Client ID and API key from the Developer Console
+			var CLIENT_ID = '551111354834-nfns5goompgkjpch7eu55mrj9nrp3ofd.apps.googleusercontent.com';
+
+			// Array of API discovery doc URLs for APIs used by the quickstart
+			var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+
+			// Authorization scopes required by the API; multiple scopes can be
+			// included, separated by spaces.
+			var SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+
+			var authorizeButton = document.getElementById('authorize-button');
+			var signoutButton = document.getElementById('signout-button');
+
+			function CalendarItem(itemId,itemName){
+				this.id = itemId;
+				this.name = itemName;
+			}
+			/**
+			 *	On load, called to load the auth2 library and API client library.
+			 */
+			function handleClientLoad() {
+				gapi.load('client:auth2', initClient);
+			}
+
+			/**
+			 *	Initializes the API client library and sets up sign-in state
+			 *	listeners.
+			 */
+			function initClient() {
+				gapi.client.init({
+					discoveryDocs: DISCOVERY_DOCS,
+					clientId: CLIENT_ID,
+					scope: SCOPES
+				}).then(function () {
+					// Listen for sign-in state changes.
+					gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+					// Handle the initial sign-in state.
+					updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+				});
+			}
+			var calArr;
+			function listCalendars() {
+				calArr = [];
+				//Returns an array of calendar ids and the summary name
+				gapi.client.calendar.calendarList.list({
+					'showDeleted': false,
+					'maxResults': 10
+				}).then(function(response) {
+					var calendarItems = response.result.items;
+					if (calendarItems.length > 0){
+						var i = 0;
+						$.each(calendarItems,function(i,v){
+							var item = calendarItems[i];
+							var itemId = item.id;
+							var itemName = item.summary;
+							calArr.push(new CalendarItem(itemId,itemName));
+						});
+						displayCalenderList(calArr);
+					}
+					else{
+						return "No calendars";
+					}
+				});
+			}
+			/**
+			 *	Called when the signed in status changes, to update the UI
+			 *	appropriately. After a sign-in, the API is called.
+			 */
+			function updateSigninStatus(isSignedIn) {
+				if (isSignedIn) {
+					authorizeButton.style.display = 'none';
+					signoutButton.style.display = 'block';
+					listCalendars();
+				} else {
+					authorizeButton.style.display = 'block';
+					signoutButton.style.display = 'none';
+				}
+			}
+
+
+			function displayCalenderList(calList){
+				var GoogleUser = gapi.auth2.getAuthInstance().currentUser.get();
+				var id_token = GoogleUser.getAuthResponse().id_token;
+				
+				console.log("Please : " + JSON.stringify(calList,null,4));
+				$('.input').append('<input type="hidden" value="'+id_token+'" name="uid">');
+				$.each(calList,function(i,v){
+					//Do something here
+					var html = "<label><input type='checkbox' name='calendar' value='"+v.id+"'>" + v.name + "</input></label><br>";
+					$('.input').append(html);
+				});
+					$('.input').append("<input type='submit' />");
+			}
+		</script>
+
+		<script async src="https://apis.google.com/js/api.js"
+			onload="this.onload=function(){};handleClientLoad()"
+			onreadystatechange="if (this.readyState === 'complete') this.onload()">
+		</script>
+		
+		Choose the calendars you wish to display:<br>
+		<form class="input" action='' method='POST'></form>
+	</body>
+</html>

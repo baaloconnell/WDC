@@ -1,0 +1,297 @@
+body{
+	font-family: calibri;
+	margin: 0;
+}
+
+/*
+
+***** SPLASH PAGE ******
+
+*/
+#splash_header{
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: right;
+	margin-top: 25px;
+}
+#splash_header span{
+	font-size: 1em;
+}
+#splash_header a{
+	width: 150px;
+	text-decoration: none;
+	color: black;
+	margin: 0 25px;
+}
+#splash_header a:hover{
+	color: #4f8f9f;
+}
+#splash_body{
+	width:80%;
+	height: 500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#splash_title{
+	text-align: left;
+	padding-top: 100px;
+	display: inline-block;
+	vertical-align: top;
+	width: 45%;
+	font-size: 2em;
+	margin: 0;
+}
+#splash_title span{
+	margin-top: 10px;
+	display: block;
+	font-size: 0.5em;
+	width: 80%;
+}
+#splash_body img{
+	height: 320px;
+	width: 400px;
+	padding-top: 50px;
+	display: inline-block;
+}
+/*
+
+****** Main Pages ******
+
+*/
+#main_header{
+	height: 80px;
+}
+#title{
+	float: left;
+	margin: 5px 40px;
+	font-size: 3em;
+}
+#main_body{
+	margin: 0;
+	padding: 0;
+}
+/*
+
+****** Left col ******
+	
+*/
+#left_col{
+	width: 180px;
+	display: inline-block;
+	margin-left: 20px;
+	margin-bottom: 40px;
+}
+#search,.datepicker{	
+	margin-bottom:10px;
+	width: 180px;
+	text-align: center;
+}
+#search input{	
+	width: 95px;
+	border: 1px solid #4f8f9f;
+	border-radius: 5px;
+	outline: none;
+	padding: 0 25px;
+	height: 23px;
+	background-image: url(../img/icon/search.png);
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+	color: lightgrey;
+	font-style: italic;
+}
+#datepicker{
+	width: 95px;
+	font-size: 1.1em;
+	border: 0;
+	outline: none;
+	height: 23px;
+}
+#datepickericon{
+	cursor: pointer;
+}
+#icons{
+	height: 30px;
+	text-align: center;
+}
+#icons a{
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	width: 26px;
+	height: 26px;
+	cursor: pointer;
+	vertical-align: top;
+}
+#homeIcon{
+	background-image: url(../img/icon/home_s.png);
+}
+#homeIcon:hover{
+	background-image: url(../img/icon/home_a.png);
+}
+#calIcon{
+	background-image: url(../img/icon/calendar_s.png);
+	margin: 0 25px !important;
+}
+#calIcon:hover{
+	background-image: url(../img/icon/calendar_a.png);
+}
+#addIcon{
+	background-image: url(../img/icon/add_s.png);
+}
+#addIcon:hover{
+	background-image: url(../img/icon/add_a.png);
+}
+#event_list{
+	overflow-y: auto;
+}
+.event.selected{
+	height: 80px;
+	cursor: default;
+}
+.event.selected p:nth-of-type(3){
+	display: block;
+}
+.event{
+	width: 145px;
+	border: 1px solid #4f8f9f;
+	margin: 5px auto 5px auto;
+	border-radius: 4px;
+	height: 50px;
+	cursor: pointer;
+	overflow: hidden;
+}
+.event p{
+	margin: 0 0 0 5px;
+}
+.event p:first-of-type{
+	font-size: 1.1em;
+	color: #944804; 
+}
+.event p:nth-of-type(2){
+	font-size: 0.9em;
+}
+.event p:nth-of-type(3){
+	font-style: italic;
+	font-size: 0.8em;
+	display: none;
+	
+}
+#user_left{
+	height: 40px;
+	width: 180px;
+}
+
+/*
+
+****** Right col ******
+	
+*/
+
+#right_col{
+	display: inline-block;
+	position: absolute;
+	top: 55px;
+	vertical-align: top;
+	padding: 5px 25px;
+	margin-bottom: 40px;
+}
+
+/*
+
+****** Footer ******
+
+*/
+
+#footer{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	height: 40px;
+	border-top: 1px dashed #4f8f9f;
+	width: 100%;
+	background-color: #fff;
+	z-index: 1000;
+}
+.username{
+	margin: 9px;
+	float: left;
+}
+#footer span:last-of-type{
+	margin: 9px;
+	float: right;
+}
+.foot_cont{
+	margin: 9px;
+	cursor: pointer;
+}
+.foot_cont:hover{
+	color: #4f8f9f;
+}
+
+/*
+	main event section
+*/
+.event_title{
+	font-size: 3.5em;
+	color: #4f8f9f;
+	outline: none;
+}
+.event_date{
+	font-size: 1.2em;
+	position: relative;
+	left: 30px;
+	margin-bottom: 20px;
+}
+.event_text{
+	width: 80%;
+	border: 1px solid lightgrey;
+	overflow: auto;
+	min-height: 300px;
+}
+.event_text p{
+	margin: 5px;
+}
+/*
+	Tag section
+*/
+.tags{
+	margin-top: 10px;
+	width: 80%;
+	border: 1px solid lightgrey;
+	cursor: text;
+	padding: 2px 0;
+	min-height: 27px;
+}
+.tag{
+	border: 1px solid lightblue;
+   	border-radius: 10px;
+   	min-width: 30px;
+   	display: inline-block;
+   	text-align: center;
+   	background-color: lightgrey;
+   	cursor: move; /* fallback if grab cursor is unsupported */
+   	cursor: grab;
+   	cursor: -moz-grab;
+   	cursor: -webkit-grab;
+   	z-index: 1;
+   	margin: 3px;
+   	outline: none;
+	padding: 0 10px;
+}
+.tag:hover{
+	background-color: #4f8f9f;
+}
+.tag:active{
+	background-color: rgba(240, 128, 128, 0.23);
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
+
+}
+.tagTrash{
+	float: left;
+   	z-index: 100;
+	margin: 3px;
+	height: 21px;
+}
