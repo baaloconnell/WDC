@@ -7,7 +7,7 @@ Guide
 1. Download and Install NodeJS.
     - You can find the installer HERE: https://nodejs.org/en/download/
     - Linux users should use install the appropriate package using their package management system.
-2. Create the folder that you want your express server files to reside in.
+2. Create the folder that you want your express server files to reside in and download this repository and place it in there.
 3. Open a command prompt/terminal and navigate to the folder that you just created.
 4. Run the command "npm install -g express-generator".
    - Mac users may need to run sudo npm install -g express-generator.
