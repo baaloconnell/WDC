@@ -66,7 +66,7 @@ router.get('/oauthcallback', function(req, res, next) {
 			}, function (err, response) {
 				if (!err) {
 					var idToken = response.id;
-					req.session.idTokenToken = idToken;
+					req.session.idToken = idToken;
 					cJ(response,'user info');
 					res.redirect('/events.html');
 				}
@@ -238,10 +238,6 @@ function formatEvents(req,res,calEvents,callback){
 				}
 				var desc=''
 				var descPrev;
-				/* if (typeof(descArr[userId])==='undefined'){
-					descArr[userId] = [];
-				}
-				descArr[userId][id] = val; */
 				if (typeof(descArr[req.session.idToken])!=='undefined'){
 					if (typeof(descArr[req.session.idToken][id])!=='undefined'){
 						desc = descArr[req.session.idToken][id];
@@ -370,7 +366,7 @@ router.post('/descUpdate', function(req,res,next){
 	
 });
 router.post('/signOut', function(req,res,next){
-	if (typeof(req.session.token) == 'undefined'){
+	if (typeof(req.session.token) === 'undefined'){
 		res.send(true);
 	}
 	else{
