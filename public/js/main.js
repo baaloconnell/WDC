@@ -20,7 +20,15 @@ $(document).ready(function(){
 		});
 	}
 	
-		
+	//Signs the user out
+	$('#signout-button').click(function(){
+		$.ajax({
+			method: "POST",
+			url: "signOut"
+		}).done(function( msg ) {
+			window.location.assign('http://localhost:55666/');
+		});
+	});
 	
 	//Sets the correct left column height on load and window resize
 	changeLeftCol();
