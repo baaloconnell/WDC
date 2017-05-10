@@ -39,7 +39,7 @@ router.get('/redirecturl', function(req, res, next) {
 	
 	var url = oauthClient.generateAuthUrl({
 		access_type: 'online',
-		scope: scopes,
+		scope: scopes
 		// Optional property that passes state parameters to redirect URI
 		// state: { foo: 'bar' }
 	});
@@ -56,7 +56,7 @@ router.get('/oauthcallback', function(req, res, next) {
 		if (!err) {
 			oauthClient.setCredentials(tokens);
 			req.session.token = tokens;
-			cJ(req.session , "SDFKJSKDLFJKSLDFSDKLKLSD")
+			//cJ(req.session , "Session data")
 			var prof = google.oauth2({
 				version: 'v2',
 				auth: oauthClient
@@ -67,7 +67,7 @@ router.get('/oauthcallback', function(req, res, next) {
 				if (!err) {
 					var idToken = response.id;
 					req.session.idToken = idToken;
-					cJ(response,'user info');
+					//cJ(response,'user info');
 					res.redirect('/events.html');
 				}
 				else{
@@ -107,10 +107,18 @@ router.get('/drawSpecEvent', function(req,res,next){
 		eventId : eId,
 		auth: oauthClient
 	},function(err,response){
+		//Check values are defined before assigning, will change this process with DB integration
 		if (typeof(descArr[req.session.idToken])!=='undefined'){
-			if (typeof(descArr[req.session.idToken][eId])!=='undefined'){
-			console.log("SETTING DESC TO: " + descArr[req.session.idToken][eId])
-			response.description = descArr[req.session.idToken][eId];
+			if (typeof(descArr[req.session.idToken].desc)!=='undefined'){
+				
+				if (typeof(descArr[req.session.idToken].desc[eId])!=='undefined'){
+					response.description = descArr[req.session.idToken].desc[eId];
+				}
+			}
+			if (typeof(descArr[req.session.idToken].title)!=='undefined'){
+				if (typeof(descArr[req.session.idToken].title[eId])!=='undefined'){
+					response.summary = descArr[req.session.idToken].title[eId];
+				}
 			}
 		}
 		if (!err) {
@@ -143,8 +151,8 @@ router.get('/calIdList', function(req,res,next){
 					calId[i] = response.items[i].id;
 				}
 				req.session.calId = calId;
-				cJ(calId , 'calendar ids');
-				cJ(req.session.calId , 'session calendar ids');
+				//cJ(calId , 'calendar ids');
+				//cJ(req.session.calId , 'session calendar ids');
 				res.send(calId);
 			}
 			else{
@@ -154,7 +162,7 @@ router.get('/calIdList', function(req,res,next){
 	}
 });
 function gatherEvents(req,res,token,calIdArr,dateTo,dateFrom,callback){
-	cJ(calIdArr,'cal IDs passed to draw all events');
+	//cJ(calIdArr,'cal IDs passed to draw all events');
 	var oauthClient = oAuthClient();
 	var tokens = token;
 	oauthClient.setCredentials(tokens);
@@ -176,7 +184,7 @@ function gatherEvents(req,res,token,calIdArr,dateTo,dateFrom,callback){
 			//cJ(response,'EVENT RAW');
 			if (!err) {
 				if (response !== 'Not Found' && response.items.length > 0){
-					cJ(response,'Found!!! for calId: "'+calIdVal+'"');
+					//cJ(response,'Found!!! for calId: "'+calIdVal+'"');
 					response.items.calid = calIdVal;
 					eventArr.push(response.items);
 				}
@@ -204,9 +212,21 @@ function formatEvents(req,res,calEvents,callback){
 		if (events.length > 0) {
 			empty = 0;
 			for (i = 0;i<events.length; i++) {
+				var id = events[i].id;
+				var parentCalId = events[i].organizer.email;
 				
-				var title = events[i].summary;
+				var title;
+				title = events[i].summary;
 				
+				//Set the title checking each step is defined to avoid errors
+				if (typeof(descArr[req.session.idToken])!=='undefined'){
+					if (typeof(descArr[req.session.idToken].title)!=='undefined'){	
+						if (typeof(descArr[req.session.idToken].title[id])!=='undefined'){	
+							console.log('Set title to ' + descArr[req.session.idToken].title[id]);
+							title = descArr[req.session.idToken].title[id];
+						}
+					}
+				}
 				if (title.length > 16){
 					titlePrev = title.substr(0,15) + '..';
 				}
@@ -214,8 +234,6 @@ function formatEvents(req,res,calEvents,callback){
 					titlePrev = title;
 				}
 				
-				var id = events[i].id;
-				var parentCalId = events[i].organizer.email;
 				var eventDate;
 				
 				if (typeof(events[i].start.dateTime)=='undefined'){
@@ -239,8 +257,10 @@ function formatEvents(req,res,calEvents,callback){
 				var desc=''
 				var descPrev;
 				if (typeof(descArr[req.session.idToken])!=='undefined'){
-					if (typeof(descArr[req.session.idToken][id])!=='undefined'){
-						desc = descArr[req.session.idToken][id];
+					if (typeof(descArr[req.session.idToken].desc)!=='undefined'){
+						if (typeof(descArr[req.session.idToken].desc[id])!=='undefined'){
+							desc = descArr[req.session.idToken].desc[id];
+						}
 					}
 				}
 				if (desc == ''){
@@ -278,7 +298,7 @@ function formatEvents(req,res,calEvents,callback){
 		}
 	}
 }
-function formatEventsCal(res,calEvents,callback){
+function formatEventsCal(req,res,calEvents,callback){
 	var eventListObj = [];
 	var empty = 1;
 	for (var c in calEvents){
@@ -296,6 +316,15 @@ function formatEventsCal(res,calEvents,callback){
 				//Title of the event
 				var title = events[i].summary;
 				
+				//Set the title checking each step is defined to avoid errors
+				if (typeof(descArr[req.session.idToken])!=='undefined'){
+					if (typeof(descArr[req.session.idToken].title)!=='undefined'){	
+						if (typeof(descArr[req.session.idToken].title[id])!=='undefined'){	
+							console.log('Set title to ' + descArr[req.session.idToken].title[id]);
+							title = descArr[req.session.idToken].title[id];
+						}
+					}
+				}
 				//Event date
 				var eventDate;
 				
@@ -330,7 +359,7 @@ router.get('/eventList', function(req,res,next){
 	
 	//Change the callback function depending on the source of the query
 	if (type == 'calendar'){
-		gatherEvents(res,tokens,calIds,dateTo,dateFrom,formatEventsCal);
+		gatherEvents(req,res,tokens,calIds,dateTo,dateFrom,formatEventsCal);
 	}
 	else{
 		gatherEvents(req,res,tokens,calIds,dateTo,dateFrom,formatEvents);
@@ -355,13 +384,17 @@ function sortCalList(req,r,drawEvents){
 router.post('/descUpdate', function(req,res,next){
 	var id = req.body.id;
 	var val = req.body.value;
+	var type = req.body.type;
 	var userId = req.session.idToken;
-	console.log('Updated '+id+' with ' + val + ' for ' + req.session.idToken);
+	console.log('Updated '+type+' '+id+' with ' + val + ' for ' + req.session.idToken);
 	if (typeof(descArr[userId])==='undefined'){
 		descArr[userId] = [];
 	}
-	descArr[userId][id] = val;
-	console.log(descArr[userId][id]);
+	if (typeof(descArr[userId][type])==='undefined'){
+		descArr[userId][type] = [];
+	}
+	descArr[userId][type][id] = val;
+	console.log(descArr[userId][type][id]);
 	res.send(true);
 	
 });

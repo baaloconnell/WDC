@@ -7,10 +7,14 @@ var day = dateObj.getDay();
 
 var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-var yearHtml;
-for (i=2000;i<2023;i++){
-	yearHtml += "<option>"+i+"</option>";
-}	
+function genYear(){
+	var h;
+	for (i=2000;i<2023;i+=1){
+		h += "<option>"+i+"</option>";
+	}
+	return h;
+}
+var yearHtml = genYear();
 function drawMainCal(calIdArr,dateFrom,dateTo){
 	//Load the calendar events given a calendar id array
 	$.ajax({
@@ -137,12 +141,10 @@ function writeMonth(month,year){
 	}
 	
 	//Set the title to month and year
-	var titleHtml = '\
-				<span id="leftMonth" alt="'+priorMonth+'"> < </span>\
-				<span id="listMonth" alt="'+month+'">'+monthNames[month] + '</span>\
-				<select id="listYear" name="year">' + yearHtml + '</select>\
-				<span id="rightMonth" alt="'+nextMonth+'"> > </span>\
-	';
+	var titleHtml = '<span id="leftMonth" alt="'+priorMonth+'"> < </span>'+
+					'<span id="listMonth" alt="'+month+'">'+monthNames[month] + '</span>'+
+					'<select id="listYear" name="year">' + yearHtml + '</select>'+
+					'<span id="rightMonth" alt="'+nextMonth+'"> > </span>';
 	$('#currPeriod').html(titleHtml);
 	$('#listYear').val(year);
 	
@@ -157,7 +159,7 @@ function writeMonth(month,year){
 	//write the days
 	for (i=1;i<=daysInMonth(monthNormalised,year);i++){
 		
-		if (daysInMonth(monthNormalised,year) == i){
+		if (daysInMonth(monthNormalised,year) === i){
 			//If its the last day of the month write the left over date squares (if any) and end the row div
 			dateHtml += '<span class="date" alt="'+i+'">'+i+'</span>';
 			for(var c=(new Date(year,month,i).getDay());c < 6;c++){
@@ -165,7 +167,7 @@ function writeMonth(month,year){
 			}
 			dateHtml += '</div>';
 		}
-		else if (new Date(year,month,i).getDay() == 6){
+		else if (new Date(year,month,i).getDay() === 6){
 			//If its the last day of the week end the row div and start anew
 			dateHtml += '<span class="date" alt="'+i+'">'+i+'</span>';
 			dateHtml += '</div><div class="calRow">';
@@ -189,7 +191,7 @@ function writeMonth(month,year){
 function inputEvent(eventId,calendarId,date,eventTitle,fullTitle){
 	
 	var eventHtml = '<div class="eventCal" title="'+fullTitle+'" id="obj'+eventId+'" alt="'+calendarId+'">'+eventTitle+'</div>';
-	if ($('.date[alt="'+date+'"] .eventCal').length > 3 && $('.date[alt="'+date+'"] .eventViewAll').length == 0){
+	if ($('.date[alt="'+date+'"] .eventCal').length > 3 && $('.date[alt="'+date+'"] .eventViewAll').length === 0){
 		$('.date[alt="'+date+'"]').append('<a class="eventViewAll">View all...</a>');
 	}
 	else if($('.date[alt="'+date+'"] .eventCal').length <= 3){
@@ -238,8 +240,8 @@ function niceDay(d){
 $(document).ready(function(){
 	
 	checkSignInState();
-	//Sets the correct calendar size on window resize
 	
+	//Sets the correct calendar size on window resize
 	$( window ).resize(function() {
 		changeCalSize();
 	});
@@ -251,7 +253,7 @@ $(document).ready(function(){
 		var day = $(this).parent('span').attr('alt');
 		var month = $('#listMonth').attr('alt');
 		var year = $('#listYear').val();
-		var dateFrom = new Date(year,month,day,00);
+		var dateFrom = new Date(year,month,day,0);
 		var dateTo = new Date(year,month,day,23,59,59);
 		
 		//Empty out any current events
@@ -261,18 +263,25 @@ $(document).ready(function(){
 		getCalIds('viewAll',(dateFrom).toISOString(),(dateTo).toISOString());	
 	});
 	
-	//Custom event required to control order of operation
-	$(document).on('eventsFill',function(){
-		$('.event').each(function(){
-			$(this).fadeIn("slow");
-		});
-	});
-	
 	//Calendar event click
 	$(document).on('click','.eventCal,.event',function(){
 		
+		//Draw in the events for the selected day
 		var eventId = $(this).attr('id');
 		var calId = $(this).attr('alt');
+		
+		//Generate the selected date objects
+		var day = $(this).parent('span').attr('alt');
+		var month = $('#listMonth').attr('alt');
+		var year = $('#listYear').val();
+		var dateFrom = new Date(year,month,day,0);
+		var dateTo = new Date(year,month,day,23,59,59);
+		
+		//Empty out any current events
+		$('#event_list').html('');
+		
+		//Make the call to get the required calendar IDs and then onto the events
+		getCalIds('viewAll',(dateFrom).toISOString(),(dateTo).toISOString());
 		
 		if ($(this).hasClass('eventCal')){
 			//Prevent duplicate IDs so have to remove the first three characters 'obj'
@@ -291,7 +300,7 @@ $(document).ready(function(){
 			console.log("event: " +JSON.stringify(response,null,4));
 			var title = response.summary;
 			var date = response.start.dateTime;
-			if (typeof(date)=='undefined'){
+			if (typeof(date)==='undefined'){
 				date = response.start.date + 'T00:00:00+0930';
 			}
 			var cleanDateObj = new Date(date);
@@ -299,31 +308,75 @@ $(document).ready(function(){
 			var cleanDate = fixNth((cleanDateObj.getDate())) + ' of ' + niceDay((cleanDateObj.getMonth()+1)) + ' ' + cleanDateObj.getFullYear();
 					
 			var locationString = response.location;
-			if (typeof(locationString)=='undefined'){
+			if (typeof(locationString)==='undefined'){
 				locationString = '';
 			}
 			var desc = response.description;
-			if (typeof(desc)=='undefined'){
+			if (typeof(desc)==='undefined'){
 				desc = '';
 			}
 			
 			var eventHtml = '<div class="event_title" contenteditable="true">'+title+'</div><div class="event_date">'+cleanDate + ' ' + locationString + '</div><div class="event_text" contenteditable="true">'+desc+'</div><div class="tags"><div><img class="tagTrash" alt="Tag trash" src="img/trash.png"/></div><span class="tag" contenteditable="true">tag</span></div>';
 			$('#right_col').html(eventHtml);
+			$('#event'+eventId).addClass('selected');
 		});
 		
 	});
-	
+	//Updates the event title on change
+	$(document).on('keyup',".event_title",function(){
+		
+		var textAdd;
+		var rawInput = $(this).html();
+		if ($(this).html().length < 16){
+			textAdd = $(this).html();
+		}
+		else{
+			textAdd = $(this).html().substr(0,15) + '..';
+		}
+		var id = $('.selected').attr('id').substr(5);
+		$('#event'+id+' p:first-of-type').html(textAdd);
+		//Load the stored title
+		$.ajax({
+			method: "POST",
+			url: "descUpdate",
+			data: {'id' : id , 'value' : rawInput,type:'title'}
+		}).done(function( response ) {
+			console.log(response);
+		});
+	});
+	//Updates the event text on change
+	$(document).on('keyup',".event_text",function(){
+		
+		var textAdd;
+		var rawInput = $(this).html();
+		if ($(this).text().length < 42){
+			textAdd = $(this).text();
+		}
+		else{
+			textAdd = $(this).text().substr(0,39) + '...';
+		}
+		var id = $('.selected').attr('id').substr(5);
+		$('#event'+id+' p:nth-of-type(3)').html(textAdd);
+		//Update the stored description
+		$.ajax({
+			method: "POST",
+			url: "descUpdate",
+			data: {'id' : id , 'value' : rawInput , 'type' :'desc'}
+		}).done(function( response ) {
+			console.log(response);
+		});
+	});
 	//Navigate months
 	$(document).on('click','#leftMonth,#rightMonth',function(){
 		
 		$('#leftMonth,#rightMonth').stop(true, true);
 		var currMonth = $(this).attr('alt');
 		//Re-write for the new month
-		if (Number(currMonth) == 0 && $(this).attr('id') == 'rightMonth'){
+		if (Number(currMonth) === 0 && $(this).attr('id') === 'rightMonth'){
 			var nextYear = Number($('#listYear').val()) + 1;
 			$('#listYear').val(nextYear);
 		}
-		else if (Number(currMonth) == 0 && $(this).attr('id') == 'leftMonth'){
+		else if (Number(currMonth) === 0 && $(this).attr('id') === 'leftMonth'){
 			var nextYear = Number($('#listYear').val()) - 1;
 			$('#listYear').val(nextYear);
 		}
