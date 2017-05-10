@@ -1,9 +1,12 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var session = require('express-session');
 var async = require('async');
 var router = express.Router();
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
+
+var descArr = {};
 
 function cJ(e,msg){
 	//This is a simple shortcut to output json objects to the console in a nice format
@@ -53,7 +56,7 @@ router.get('/oauthcallback', function(req, res, next) {
 		if (!err) {
 			oauthClient.setCredentials(tokens);
 			req.session.token = tokens;
-			
+			cJ(req.session , "SDFKJSKDLFJKSLDFSDKLKLSD")
 			var prof = google.oauth2({
 				version: 'v2',
 				auth: oauthClient
@@ -63,7 +66,7 @@ router.get('/oauthcallback', function(req, res, next) {
 			}, function (err, response) {
 				if (!err) {
 					var idToken = response.id;
-					req.session.id = idToken;
+					req.session.idTokenToken = idToken;
 					cJ(response,'user info');
 					res.redirect('/events.html');
 				}
@@ -104,6 +107,12 @@ router.get('/drawSpecEvent', function(req,res,next){
 		eventId : eId,
 		auth: oauthClient
 	},function(err,response){
+		if (typeof(descArr[req.session.idToken])!=='undefined'){
+			if (typeof(descArr[req.session.idToken][eId])!=='undefined'){
+			console.log("SETTING DESC TO: " + descArr[req.session.idToken][eId])
+			response.description = descArr[req.session.idToken][eId];
+			}
+		}
 		if (!err) {
 			res.send(response);
 		}
@@ -144,7 +153,7 @@ router.get('/calIdList', function(req,res,next){
 		});
 	}
 });
-function gatherEvents(res,token,calIdArr,dateTo,dateFrom,callback){
+function gatherEvents(req,res,token,calIdArr,dateTo,dateFrom,callback){
 	cJ(calIdArr,'cal IDs passed to draw all events');
 	var oauthClient = oAuthClient();
 	var tokens = token;
@@ -154,32 +163,6 @@ function gatherEvents(res,token,calIdArr,dateTo,dateFrom,callback){
 		auth: oauthClient
 	});
 	var eventArr = [];
-	//This var holds a count of the number of times calendar items have been collected so it moves on at the correct point
-	
-	
-	/*
-	
-	//This is from http://caolan.github.io/async/docs.html#eachOf
-	
-	var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
-	var configs = {};
-
-	async.forEachOf(obj, function (value, key, callback) {
-		fs.readFile(__dirname + value, "utf8", function (err, data) {
-			if (err) return callback(err);
-			try {
-				configs[key] = JSON.parse(data);
-			} catch (e) {
-				return callback(e);
-			}
-			callback();
-		});
-	}, function (err) {
-		if (err) console.error(err.message);
-		// configs is now a map of JSON data
-		doSomethingWith(configs);
-	});
-	*/
  	async.forEachOf(calIdArr, function (calIdVal, key, callback) {
 		cal.events.list({
 			calendarId: calIdVal,
@@ -209,10 +192,10 @@ function gatherEvents(res,token,calIdArr,dateTo,dateFrom,callback){
 	}, function (err) {
 		if (err) console.error(err.message);
 		// configs is now a map of JSON data
-		callback(res,eventArr);
+		callback(req,res,eventArr);
 	});
 }
-function formatEvents(res,calEvents,callback){
+function formatEvents(req,res,calEvents,callback){
 	var eventListObj = [];
 	var empty = 1;
 	for (var c in calEvents){
@@ -253,16 +236,25 @@ function formatEvents(res,calEvents,callback){
 				if (typeof(location)=='undefined'){
 					location = '';
 				}
-				var desc
-				if (typeof(events[i].description)=='undefined'){
-					desc = '';
-				}
-				else{
-					desc = events[i].description;
-				}
-				
+				var desc=''
 				var descPrev;
-				
+				/* if (typeof(descArr[userId])==='undefined'){
+					descArr[userId] = [];
+				}
+				descArr[userId][id] = val; */
+				if (typeof(descArr[req.session.idToken])!=='undefined'){
+					if (typeof(descArr[req.session.idToken][id])!=='undefined'){
+						desc = descArr[req.session.idToken][id];
+					}
+				}
+				if (desc == ''){
+					if (typeof(events[i].description)=='undefined'){
+						desc = '';
+					}
+					else{
+						desc = events[i].description;
+					}
+				}
 				if (desc !== ''){
 					if (desc.length > 41){
 						descPrev = desc.substr(0,39) + '...';
@@ -345,7 +337,7 @@ router.get('/eventList', function(req,res,next){
 		gatherEvents(res,tokens,calIds,dateTo,dateFrom,formatEventsCal);
 	}
 	else{
-		gatherEvents(res,tokens,calIds,dateTo,dateFrom,formatEvents);
+		gatherEvents(req,res,tokens,calIds,dateTo,dateFrom,formatEvents);
 	}
 });
 
@@ -364,6 +356,33 @@ function sortCalList(req,r,drawEvents){
 	callback(req)
 }
 
+router.post('/descUpdate', function(req,res,next){
+	var id = req.body.id;
+	var val = req.body.value;
+	var userId = req.session.idToken;
+	console.log('Updated '+id+' with ' + val + ' for ' + req.session.idToken);
+	if (typeof(descArr[userId])==='undefined'){
+		descArr[userId] = [];
+	}
+	descArr[userId][id] = val;
+	console.log(descArr[userId][id]);
+	res.send(true);
+	
+});
+router.post('/signOut', function(req,res,next){
+	if (typeof(req.session.token) == 'undefined'){
+		res.send(true);
+	}
+	else{
+		req.session.destroy(function(err) {
+			res.send(true);
+		});
+	}
+});
+
+function sortCalList(req,r,drawEvents){
+	callback(req)
+}
 
 router.post('/tokensignin', function(req, res, next) {
 	console.log(JSON.stringify(req.body,null,4));

@@ -251,21 +251,30 @@ $(document).ready(function(){
 		else{
 			textAdd = $(this).html().substr(0,15) + '..';
 		}
-		var id = $(this).parent('div').attr('id').substr(11,1);
+		var id = $('.selected').attr('id').substr(5);
 		$('#event'+id+' p:first-of-type').html(textAdd);
 	});
 	//Updates the event text on change
 	$(document).on('keyup',".event_text",function(){
 		
 		var textAdd;
+		var rawInput = $(this).html();
 		if ($(this).text().length < 42){
 			textAdd = $(this).text();
 		}
 		else{
 			textAdd = $(this).text().substr(0,39) + '...';
 		}
-		var id = $(this).parent('div').attr('id').substr(11,1);
+		var id = $('.selected').attr('id').substr(5);
 		$('#event'+id+' p:nth-of-type(3)').html(textAdd);
+		//Load the calendar events given a calendar id array
+		$.ajax({
+			method: "POST",
+			url: "descUpdate",
+			data: {'id' : id , 'value' : rawInput}
+		}).done(function( response ) {
+			console.log(response);
+		});
 	});
 	
 	//Stops line breaks on tag edit, removes spaces, adds new tag when enter is pressed
