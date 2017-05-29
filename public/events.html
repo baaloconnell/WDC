@@ -9,6 +9,7 @@
 		<script src="jquery-ui/jquery-ui.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 		<script type="text/javascript" src="js/events.js"></script>
+		<script type="text/javascript" src="js/event_elem.js"></script>
 		
 	</head>
 	<body>
@@ -20,7 +21,7 @@
 				<div id="icons">
 					<a id="homeIcon" href="events.html"></a><a id="calIcon" href="calendar.html"></a><a id="addIcon" href="add.html"></a>
 				</div>
-				<div id="search"><input type="text" name="search" value="Search"/></div>
+				<div id="search"><input class="search" type="text" name="search" value="Search"/></div>
 				<div class="datepicker"><input type="text" id="datepicker" /><span class="ui-icon ui-icon-circle-triangle-s" id="datepickericon"></span></div>
 				<div id="event_list">
 				</div>
@@ -30,7 +31,11 @@
 		</div>
 		<div id="footer">
 			<span class="username">Hi, </span>
-			<span><a class="foot_cont" href="settings.html">Settings</a> | <a class="foot_cont" id="signout-button">Logout</a></span>
+			<span><a class="foot_cont" href="settings.html">Settings</a> | <a class="foot_cont" href="" id="signout-button">Logout</a></span>
+		</div>
+		<div class="tagAutoComplete">
+			<ul>
+			</ul>
 		</div>
 	</body>
 </html>

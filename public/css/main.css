@@ -263,6 +263,10 @@ span.buttonText {
 .foot_cont{
 	margin: 9px;
 	cursor: pointer;
+	text-decoration: none;
+}
+.foot_cont:visited{
+	color: black;
 }
 .foot_cont:hover{
 	color: #4f8f9f;
@@ -308,7 +312,7 @@ span.buttonText {
    	min-width: 30px;
    	display: inline-block;
    	text-align: center;
-   	background-color: lightgrey;
+   	background-color: #ececec;
    	cursor: move; /* fallback if grab cursor is unsupported */
    	cursor: grab;
    	cursor: -moz-grab;
@@ -317,6 +321,8 @@ span.buttonText {
    	margin: 3px;
    	outline: none;
 	padding: 0 10px;
+	height: 20px;
+	vertical-align: top;
 }
 .tag:hover{
 	background-color: #4f8f9f;
@@ -333,4 +339,37 @@ span.buttonText {
    	z-index: 100;
 	margin: 3px;
 	height: 21px;
+}
+/* AUTO COMPLETE */
+.tagActiveDrop{
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	v-index: 1;
+	border-bottom: 1px dashed lightblue;
+}
+.tagAutoComplete{
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 541px;
+	left: 255px;
+	background-color: #ececec;;
+	border: 1px solid lightblue;
+}
+.tagAutoComplete ul{
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+.tagAutoComplete li{
+	min-width: 30px;
+	border-bottom: 1px dashed lightblue;
+	padding: 2px 10px;
+	cursor: pointer;
+}
+.tagAutoComplete li:last-of-type{
+	border-bottom: none;
+}
+.tagAutoComplete .activeAC{
+	background-color: #678D9D;
 }

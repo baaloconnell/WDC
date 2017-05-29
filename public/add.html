@@ -1,11 +1,22 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
-		<title>Journey :: Events</title>
+		<title>Journey :: Add Event</title>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
-		<link rel="stylesheet" type="text/css" href="css/events.css">
+		<link rel="stylesheet" type="text/css" href="css/add.css">
+		<link href="jquery-ui/jquery-ui.css" rel="stylesheet">
+		<link href="css/jquery-ui-timepicker-addon.css" rel="stylesheet">
+		<style>
+		</style>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="jquery-ui/jquery-ui.js"></script>
+		<script src="js/jquery-ui-timepicker-addon.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
+		<script type="text/javascript" src="js/event_elem.js"></script>
+		<script type="text/javascript" src="js/add.js"></script>
+	<script>
+		
+	</script>
 	</head>
 	<body>
 		<div id="main_header">
@@ -16,39 +27,7 @@
 				<div id="icons">
 					<a id="homeIcon" href="events.html"></a><a id="calIcon" href="calendar.html"></a><a id="addIcon" href="add.html"></a>
 				</div>
-				<div id="search"><input type="text" name="search" value="Search"/></div>
-				<div id="event_list">
-					<!-- <div class="event selected" id="event0">
-						<p>Event Title</p>
-						<p>17:52 05/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div>
-					<div class="event" id="event1">
-						<p>Event Title</p>
-						<p>06:00 04/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div>
-					<div class="event" id="event2">
-						<p>Event Title</p>
-						<p>18:26 03/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div>
-					<div class="event" id="event3">
-						<p>Event Title</p>
-						<p>09:00 02/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div>
-					<div class="event" id="event4">
-						<p>Event Title</p>
-						<p>19:40 01/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div>
-					<div class="event" id="event5">
-						<p>Event Title</p>
-						<p>09:05 01/01/2017</p>
-						<p>Lorem ipsum dolor sit amet, consectetur...</p>
-					</div> -->
-				</div>
+				<div id="search"><input class="search" type="text" name="search" value="Search"/></div>
 				<!-- <div id="user_left">
 					Username
 				</div> -->
@@ -56,25 +35,40 @@
 			<div id="right_col">
 				<div class="event_title" contenteditable="true">Enter Title</div>
 				<div class="event_date">
-					<span style="display: inline-block; width: 80px;">Date: </span><input type="text" id="date" /> <br>
-					<span style="display: inline-block; width: 80px;">Location: </span><input type="text" id="location" /> 
+					<span style="display: inline-block; width: 80px;">Date: </span><input type="text" id="datepicker" style="width:170px !important;"/><span class="ui-icon ui-icon-circle-triangle-s" id="datepickericon"></span> <br>
+					<span style="display: inline-block; width: 80px;">Location: </span><input type="text" id="location" value="7 Clifford Ave, Kurralta Park, South Australia, Australia"/> 
 				</div>
 				<div class="event_text" contenteditable="true">
-					
 				</div>
 				<div class="tags">
-					<div>
-						<img id="tagTrash" alt="Tag trash" src="img/trash.png"/>
-					</div>
+					<img class="tagTrash" alt="Tag trash" src="img/trash.png"/>
 				</div>
 				<div style="width: 80%;">
-				<button style="float:right; margin-top: 15px;">Submit</button>
+				<button id="submit" style="float:right; margin-top: 15px;">Submit</button>
 				</div>
 			</div>
 		</div>
 		<div id="footer">
 			<span class="username">Hi, Username</span>
-			<span><a class="foot_cont">Settings</a> | <a class="foot_cont">Logout</a></span>
+			<span><a class="foot_cont" href="settings.html">Settings</a> | <a class="foot_cont" href="" id="signout-button">Logout</a></span>
+		</div>
+		<script>
+
+		var autocomplete;
+	
+		function initAutocomplete() {
+			// Create the autocomplete object, restricting the search to geographical
+			// location types.
+			autocomplete = new google.maps.places.Autocomplete(
+				(document.getElementById('location')),
+				{});
+		}
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2_GRAiOUQu7A6j6EfCVIuTDLDEaHZGA&libraries=places&callback=initAutocomplete"
+			async defer></script>
+		<div class="tagAutoComplete">
+			<ul>
+			</ul>
 		</div>
 	</body>
 </html>
